@@ -59,7 +59,7 @@ public class Ticket {
                 TicketSlot ticketSlotWithNumber = new TicketSlot(randomNumber);
                 slotRow.set(i, ticketSlotWithNumber);
             });
-            Collections.shuffle(slots);
+            Collections.shuffle(slotRow);
             slots.add(row, slotRow);
         });
 
