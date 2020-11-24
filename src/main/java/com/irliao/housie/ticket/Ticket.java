@@ -35,11 +35,11 @@ public class Ticket {
      */
     public void markNumberIfFound(int number) {
         slots.stream()
-            .flatMap(Collection::stream)
-            .filter(Objects::nonNull)
-            .filter(ticketSlot -> ticketSlot.getNumber() == number)
-            .findFirst()
-            .ifPresent(ticketSlot -> ticketSlot.setMarked(true));
+             .flatMap(Collection::stream)
+             .filter(Objects::nonNull)
+             .filter(ticketSlot -> ticketSlot.getNumber() == number)
+             .findFirst()
+             .ifPresent(ticketSlot -> ticketSlot.setMarked(true));
     }
 
     /***
