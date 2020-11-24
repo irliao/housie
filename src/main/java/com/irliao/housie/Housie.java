@@ -27,6 +27,10 @@ public class Housie extends AbstractBingoGame {
         winnableCombinations.add(new TopLineCombination());
     }
 
+    /***
+     * Gets the map of the current winners and the combinations won.
+     * @return map of winning player's ID to the Set of combinations won
+     */
     Map<Integer, Set<AbstractCombination>> getCurrentWinners() {
         return currentWinners;
     }
