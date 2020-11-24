@@ -52,6 +52,7 @@ public class SettingHandlerTest {
         assertEquals(10, settingHandler.getNumberOfCols());
         assertEquals(5, settingHandler.getNumberPerRow());
     }
+
     @Test
     public void testRequestUserInputsForSetting_badRange() {
         when(mockScanner.nextLine()).thenReturn("4") // bad num range
@@ -160,5 +161,4 @@ public class SettingHandlerTest {
         settingHandler.requestUserInputsForSetting();
         assertEquals(5, settingHandler.getNumberPerRow());
     }
-
 }
