@@ -42,16 +42,17 @@ public class Housie extends AbstractBingoGame {
      */
     @Override
     void determineWinners() {
-        players.forEach(player -> winnableCombinations.stream()
-            .filter(winCombination -> !winCombination.getClaimed())
-            .forEach(winCombination ->  {
-                if (winCombination.isWinningTicket(player.getTicket())) {
-                    System.out.println("\n");
-                    System.out.println("We have a winner: Player#" + player.getId() + " has won " + "'" + winCombination.getName() + "'" + " winning combination.");
-                    registerWinner(player.getId(), winCombination);
-                    winCombination.setClaimed(true);
-                }
-            }));
+        players.forEach(player ->
+            winnableCombinations.stream()
+                .filter(winCombination -> !winCombination.getClaimed())
+                .forEach(winCombination ->  {
+                    if (winCombination.isWinningTicket(player.getTicket())) {
+                        System.out.println("\n");
+                        System.out.println("We have a winner: Player#" + player.getId() + " has won " + "'" + winCombination.getName() + "'" + " winning combination.");
+                        registerWinner(player.getId(), winCombination);
+                        winCombination.setClaimed(true);
+                    }
+                }));
     }
 
     /***

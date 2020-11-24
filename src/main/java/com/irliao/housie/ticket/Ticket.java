@@ -65,6 +65,5 @@ public class Ticket {
 
         return slots;
     }
-
 }
 
