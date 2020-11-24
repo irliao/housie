@@ -77,7 +77,7 @@ public class HousieTest {
     }
 
     @Test
-    public void testCheckAndUpdateWinners() {
+    public void testDetermineWinners() {
         when(mockFullHouseCombination.getClaimed()).thenReturn(false).thenReturn(true);
         when(mockTopLineCombination.getClaimed()).thenReturn(false).thenReturn(true);
         when(mockEarlyFiveCombination.getClaimed()).thenReturn(false).thenReturn(true);
@@ -98,39 +98,36 @@ public class HousieTest {
         ReflectionTestUtils.setField(housie, "players", players);
 
         housie.determineWinners();
+        Map<Integer, Set<AbstractCombination>> playerIdWinMap = housie.getCurrentWinners();
 
-        assertEquals(2, player1.getCombinationsWon().size());
-        assertEquals(0, player2.getCombinationsWon().size());
+        assertEquals(1, playerIdWinMap.keySet().size());
+        assertEquals(2, playerIdWinMap.get(1).size());
     }
 
     @Test
     public void testGenerateGameSummary() {
-        Set<AbstractCombination> winCombination1 = new HashSet<>();
-        winCombination1.add(mockFullHouseCombination);
-        winCombination1.add(mockTopLineCombination);
-        Player mockPlayer1 = Mockito.mock(Player.class);
-        when(mockPlayer1.getCombinationsWon()).thenReturn(winCombination1);
+        Player player1 = new Player(1, mockTicket);
+        housie.registerWinner(player1.getId(), mockTopLineCombination);
+        housie.registerWinner(player1.getId(), mockFullHouseCombination);
 
-        Set<AbstractCombination> winCombination2 = new HashSet<>();
-        winCombination2.add(mockEarlyFiveCombination);
-        Player mockPlayer2 = Mockito.mock(Player.class);
-        when(mockPlayer2.getCombinationsWon()).thenReturn(winCombination2);
+        Player player2 = new Player(2, mockTicket);
+        housie.registerWinner(player2.getId(), mockEarlyFiveCombination);
 
-        Player mockPlayer3 = Mockito.mock(Player.class);
-        when(mockPlayer3.getCombinationsWon()).thenReturn(new HashSet<>());
+        Player player3 = new Player(3, mockTicket);
 
-        List<Player> mockPlayers = new ArrayList<>();
-        mockPlayers.add(mockPlayer1);
-        mockPlayers.add(mockPlayer2);
-        mockPlayers.add(mockPlayer3);
+        List<Player> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+        players.add(player3);
 
-        ReflectionTestUtils.setField(housie, "players", mockPlayers);
+        ReflectionTestUtils.setField(housie, "players", players);
 
         String summaryString = housie.generateGameSummary();
-        assertTrue(summaryString.contains("Full House"));
-        assertTrue(summaryString.contains("Top Line"));
-        assertTrue(summaryString.contains("Early Five"));
-        assertTrue(summaryString.contains("Nothing"));
+        System.out.println(summaryString);
+        assertTrue(summaryString.contains("Player#1 : Full House and Top Line") ||
+                   summaryString.contains("Player#1 : Top Line and Full House"));
+        assertTrue(summaryString.contains("Player#2 : Early Five"));
+        assertTrue(summaryString.contains("Player#3 : Nothing"));
     }
 
     @Test
