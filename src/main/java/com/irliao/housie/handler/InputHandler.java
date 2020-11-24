@@ -44,14 +44,14 @@ public class InputHandler {
                 quitCommand.execute();
             }
 
-            if (inputString.isEmpty() || inputString.trim().isEmpty()) {
-                System.out.println("Default to " + defaultValue);
-                return defaultValue;
-            }
-
             try {
-                int inputInt = Integer.parseInt(inputString);
-                inputIntOpt = Optional.of(inputInt);
+                if (inputString.isEmpty() || inputString.trim().isEmpty()) {
+                    System.out.println("No input detected, defaulting to " + defaultValue);
+                    inputIntOpt = Optional.of(defaultValue);
+                } else {
+                    inputIntOpt = Optional.of(Integer.parseInt(inputString));
+                }
+
                 if (!predicate.test(inputIntOpt.get())) {
                     System.out.println(errorMessage);
                     inputIntOpt = Optional.empty();
