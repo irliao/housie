@@ -90,7 +90,7 @@ public class SettingHandler {
         return inputHandler.requestNumber(">> Enter the number range : ",
             "Invalid number range entered, please enter a number >= 5",
             DEFAULT_NUMBER_RANGE_END,
-            rangeNum -> rangeNum > 5);  // greater than or equal to 5 because of Early Five Combination
+            rangeNum -> rangeNum => 5);  // greater than or equal to 5 because of Early Five Combination
     }
 
     /***
