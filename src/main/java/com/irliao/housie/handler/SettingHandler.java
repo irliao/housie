@@ -5,16 +5,17 @@ import java.util.Scanner;
 public class SettingHandler {
 
     private static final int DEFAULT_NUMBER_OF_PLAYERS = 5;
+    private static final int DEFAULT_NUMBER_RANGE_START = 1;
     private static final int DEFAULT_NUMBER_RANGE_END = 90;
     private static final int DEFAULT_NUMBER_OF_ROWS = 3;
     private static final int DEFAULT_NUMBER_OF_COLS = 10;
     private static final int DEFAULT_NUMBERS_PER_ROW = 5;
 
-    private final int numberRangeStart = 1;
     private final InputHandler inputHandler;
 
-    private int numberOfPlayers;
+    private int numberRangeStart;
     private int numberRangeEnd;
+    private int numberOfPlayers;
     private int numberOfRows;
     private int numberOfCols;
     private int numberPerRow;
@@ -27,7 +28,8 @@ public class SettingHandler {
      * Requests user for settings of the bingo game.
      */
     public void requestUserInputsForSetting() {
-        numberRangeEnd = requestNumberRange();
+        numberRangeStart = requestNumberRangeStart();
+        numberRangeEnd = requestNumberRangeEnd();
         numberOfPlayers = requestNumberOfPlayers();
         numberOfRows = requestNumberOfRows();
         numberOfCols = requestNumberOfCols();
@@ -83,14 +85,26 @@ public class SettingHandler {
     }
 
     /***
-     * Requests user input for a number range for allotted numbers on the bingo ticket.
-     * @return number range
+     * Requests user input for a number range start for allotted numbers on the bingo ticket.
+     * @return number range start
      */
-    int requestNumberRange() {
-        return inputHandler.requestNumber(">> Enter the number range : ",
-            "Invalid number range, please enter a number >= 5",
+    int requestNumberRangeStart() {
+        return inputHandler.requestNumber(">> Enter the number range start : ",
+            "Invalid number range start, please enter a number > 0",
+            DEFAULT_NUMBER_RANGE_START,
+            rangeStart -> rangeStart > 0);
+    }
+
+    /***
+     * Requests user input for a number range end for allotted numbers on the bingo ticket.
+     * The range (end - start) must be greater than 5 to handle Early Five Combination.
+     * @return number range end
+     */
+    int requestNumberRangeEnd() {
+        return inputHandler.requestNumber(">> Enter the number range end : ",
+            "Invalid number range end, please enter a number >= " + (5 + numberRangeStart - 1),
             DEFAULT_NUMBER_RANGE_END,
-            rangeNum -> rangeNum >= 5);  // greater than or equal to 6 to handle Early Five Combination
+            rangeEnd -> (rangeEnd - numberRangeStart + 1) >= 5);  // greater than or equal to 5 to handle Early Five Combination
     }
 
     /***
@@ -111,10 +125,10 @@ public class SettingHandler {
      */
     int requestNumberOfRows() {
         return inputHandler.requestNumber(">> Enter Number of rows for the Ticket : ",
-            "Invalid number of rows, please enter a number where 0 < number <= " + numberRangeEnd,
+            "Invalid number of rows, please enter a number where 0 < number <= " + (numberRangeEnd + numberRangeStart + 1),
             DEFAULT_NUMBER_OF_ROWS,
             numOfRows -> numOfRows > 0 &&
-                         numOfRows <= numberRangeEnd);
+                         numOfRows <= (numberRangeEnd - numberRangeStart + 1));
     }
 
     /***
@@ -143,11 +157,12 @@ public class SettingHandler {
      */
     int requestNumbersPerRow() {
         return inputHandler.requestNumber(">> Enter numbers per row : ",
-            "Invalid numbers per row, please enter a number where " + (numberOfRows == 1 ? 5 : (6 / numberOfRows)) + " <= number <= " + Math.min(numberOfCols, (numberRangeEnd / numberOfRows)),
+            "Invalid numbers per row, please enter a number where " + (numberOfRows == 1 ? 5 : (6 / numberOfRows)) + " <= number <= " +
+                Math.min(numberOfCols, ((numberRangeEnd - numberRangeStart + 1) / numberOfRows)),
             DEFAULT_NUMBERS_PER_ROW,
             numPerRow -> numPerRow > 0 &&
                          numPerRow <= numberOfCols &&
-                         (numPerRow * numberOfRows) <= numberRangeEnd &&
+                         (numPerRow * numberOfRows) <= (numberRangeEnd - numberRangeStart + 1) &&
                          (numPerRow * numberOfRows) >= 5); // greater than or equal to 5 because of Early Five Combination
     }
 }

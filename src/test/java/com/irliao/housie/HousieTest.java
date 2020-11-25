@@ -31,6 +31,7 @@ public class HousieTest {
 
     private final Ticket mockTicket = Mockito.mock(Ticket.class);
 
+    private final List<Player> mockPlayers = Mockito.mock(List.class);
     private final Set<AbstractCombination> winnableCombinations = new HashSet<>();
     private final BingoNumberProvider mockBingoNumberProvider = Mockito.mock(BingoNumberProvider.class);
     private final Deque<Integer> mockBingoNumbers = Mockito.mock(Deque.class);
@@ -59,10 +60,25 @@ public class HousieTest {
     }
 
     @Test
-    public void testIsGameInProgress_false() {
+    public void testIsGameInProgress_false_noMoreWinnableCombination() {
         when(mockFullHouseCombination.getClaimed()).thenReturn(true);
         when(mockTopLineCombination.getClaimed()).thenReturn(true);
         when(mockEarlyFiveCombination.getClaimed()).thenReturn(true);
+
+        when(mockPlayers.isEmpty()).thenReturn(false);
+        ReflectionTestUtils.setField(housie, "players", mockPlayers);
+
+        assertFalse(housie.isGameInProgress());
+    }
+
+    @Test
+    public void testIsGameInProgress_false_noMorePlayers() {
+        when(mockFullHouseCombination.getClaimed()).thenReturn(true);
+        when(mockTopLineCombination.getClaimed()).thenReturn(true);
+        when(mockEarlyFiveCombination.getClaimed()).thenReturn(true);
+
+        when(mockPlayers.isEmpty()).thenReturn(true);
+        ReflectionTestUtils.setField(housie, "players", mockPlayers);
 
         assertFalse(housie.isGameInProgress());
     }
@@ -72,6 +88,9 @@ public class HousieTest {
         when(mockFullHouseCombination.getClaimed()).thenReturn(false);
         when(mockTopLineCombination.getClaimed()).thenReturn(true);
         when(mockEarlyFiveCombination.getClaimed()).thenReturn(true);
+
+        when(mockPlayers.isEmpty()).thenReturn(false);
+        ReflectionTestUtils.setField(housie, "players", mockPlayers);
 
         assertTrue(housie.isGameInProgress());
     }

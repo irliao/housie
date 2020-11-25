@@ -44,7 +44,7 @@ public class Housie extends AbstractBingoGame {
     void determineWinners() {
         players.forEach(player ->
             winnableCombinations.stream()
-                .filter(winCombination -> !winCombination.getClaimed())
+                .filter(winCombination -> !winCombination.getClaimed()) // this would be commented out
                 .forEach(winCombination ->  {
                     if (winCombination.isWinningTicket(player.getTicket())) {
                         System.out.println("\n");
@@ -61,7 +61,7 @@ public class Housie extends AbstractBingoGame {
      * @param id id of the player who had a winning ticket for the combination
      * @param combinationWon the combination the player has won
      */
-    public void registerWinner(int id, AbstractCombination combinationWon) {
+    void registerWinner(int id, AbstractCombination combinationWon) {
         Set<AbstractCombination> combinationsWon = currentWinners.getOrDefault(id, new HashSet<>());
         combinationsWon.add(combinationWon);
         currentWinners.put(id, combinationsWon);
@@ -69,13 +69,15 @@ public class Housie extends AbstractBingoGame {
 
     /***
      * Determines if the current game is over yet.
-     * The game is over once there are no more winnable combinations left.
+     * The game is over once there are no more players or no more winnable combinations left.
      * @return true if all winnable combinations are claimed
      */
     @Override
     boolean isGameInProgress() {
-        return winnableCombinations.stream()
+        boolean playerStillInGame = !players.isEmpty();
+        boolean hasWinnableCombination = winnableCombinations.stream()
                                    .anyMatch(winCombination -> !winCombination.getClaimed());
+        return playerStillInGame && hasWinnableCombination;
     }
 
     /***

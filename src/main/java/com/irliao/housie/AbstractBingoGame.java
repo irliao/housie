@@ -89,6 +89,8 @@ public abstract class AbstractBingoGame {
         while (isGameInProgress());
 
         displayGameSummary();
+
+        printAllTickets();
     }
 
     /***
@@ -150,5 +152,16 @@ public abstract class AbstractBingoGame {
         System.out.println("Summary:");
         System.out.println(generateGameSummary());
         System.out.println("=======================");
+    }
+
+    /***
+     * Prints every players' ticket.
+     */
+    void printAllTickets() {
+        players.forEach(player -> {
+            System.out.println("Player#" + player.getId() + ":");
+            player.getTicket().printTicket();
+            System.out.println(" ");
+        });
     }
 }

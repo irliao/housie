@@ -16,6 +16,7 @@ public class KeyPressHandler {
 
     /***
      * Registers a key press to a command into our map.
+     * The passed in key press will be to lowered since we want to register keys ignoring case.
      * @param keyPress letter string of the key press
      * @param command command to execute
      */
@@ -28,11 +29,14 @@ public class KeyPressHandler {
 
     /***
      * Runs the command mapped to the key pressed (if found).
+     * The key press will be to lowered before checking since we registered the key press in lower case
+     * to ignore the casing.
      * @param keyPress letter string of the key press
      * @throws IllegalArgumentException if the key handled is not recognized/registered
      */
     public void runCommand(String keyPress) throws IllegalArgumentException {
-        if (!keyMap.containsKey(keyPress)) {
+        String keyPressLowered = keyPress.toLowerCase();
+        if (!keyMap.containsKey(keyPressLowered)) {
             String validKeys = keyMap.keySet()
                                      .stream()
                                      .map(String::toUpperCase)
@@ -45,6 +49,6 @@ public class KeyPressHandler {
                                      .collect(Collectors.joining(", "));
             throw new IllegalArgumentException("Invalid key press, valid keys are: " + validKeys);
         }
-        keyMap.get(keyPress).execute();
+        keyMap.get(keyPressLowered).execute();
     }
 }
