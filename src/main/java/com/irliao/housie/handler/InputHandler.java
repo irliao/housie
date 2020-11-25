@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  * The handler will repeatedly ask for user input until user enters an input that passes the Predicate.
  * This object should be responsible of validating all inputs so the entered parameters will form a proper game.
  */
-public class InputHandler {
+class InputHandler {
 
     private final Scanner inputScanner;
     private final Command quitCommand;
