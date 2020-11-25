@@ -88,7 +88,7 @@ public class SettingHandler {
      * Requests user input for a number range start for allotted numbers on the bingo ticket.
      * @return number range start
      */
-    int requestNumberRangeStart() {
+    private int requestNumberRangeStart() {
         return inputHandler.requestNumber(">> Enter the number range start : ",
             "Invalid number range start, please enter a number > 0",
             DEFAULT_NUMBER_RANGE_START,
@@ -100,7 +100,7 @@ public class SettingHandler {
      * The range (end - start) must be greater than 5 to handle Early Five Combination.
      * @return number range end
      */
-    int requestNumberRangeEnd() {
+    private int requestNumberRangeEnd() {
         return inputHandler.requestNumber(">> Enter the number range end : ",
             "Invalid number range end, please enter a number >= " + (5 + numberRangeStart - 1),
             DEFAULT_NUMBER_RANGE_END,
@@ -111,7 +111,7 @@ public class SettingHandler {
      * Request user input for number of players to participate in bingo.
      * @return number of players
      */
-    int requestNumberOfPlayers() {
+    private int requestNumberOfPlayers() {
         return inputHandler.requestNumber(">> Enter Number of players playing the game : ",
             "Invalid number of players, please enter a number > 1",
             DEFAULT_NUMBER_OF_PLAYERS,
@@ -123,7 +123,7 @@ public class SettingHandler {
      * Number of rows must be less than the range since there is at least 1 number per row.
      * @return number of rows
      */
-    int requestNumberOfRows() {
+    private int requestNumberOfRows() {
         return inputHandler.requestNumber(">> Enter Number of rows for the Ticket : ",
             "Invalid number of rows, please enter a number where 0 < number <= " + (numberRangeEnd + numberRangeStart + 1),
             DEFAULT_NUMBER_OF_ROWS,
@@ -140,7 +140,7 @@ public class SettingHandler {
      * while we need at least 5 slots with numbers.
      * @return number of columns
      */
-    int requestNumberOfCols() {
+    private int requestNumberOfCols() {
         return inputHandler.requestNumber(">> Enter Number of columns for the Ticket : ",
             "Invalid number of columns, please enter a number where number >= " + (numberOfRows == 1 ? 5 : (6 / numberOfRows)),
             DEFAULT_NUMBER_OF_COLS,
@@ -155,7 +155,7 @@ public class SettingHandler {
      * can win the Early Five Combination.
      * @return numbers per row
      */
-    int requestNumbersPerRow() {
+    private int requestNumbersPerRow() {
         return inputHandler.requestNumber(">> Enter numbers per row : ",
             "Invalid numbers per row, please enter a number where " + (numberOfRows == 1 ? 5 : (6 / numberOfRows)) + " <= number <= " +
                 Math.min(numberOfCols, ((numberRangeEnd - numberRangeStart + 1) / numberOfRows)),
