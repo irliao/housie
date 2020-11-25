@@ -1,12 +1,12 @@
 package com.irliao.housie;
 
-import com.irliao.housie.command.Command;
+import com.irliao.housie.bingo.BingoNumberProvider;
+import com.irliao.housie.bingo.RandomBingoNumberProvider;
 import com.irliao.housie.command.CallCommand;
+import com.irliao.housie.command.Command;
 import com.irliao.housie.command.QuitCommand;
 import com.irliao.housie.handler.KeyPressHandler;
 import com.irliao.housie.handler.SettingHandler;
-import com.irliao.housie.bingo.BingoNumberProvider;
-import com.irliao.housie.bingo.RandomBingoNumberProvider;
 import com.irliao.housie.role.Dealer;
 import com.irliao.housie.role.Player;
 import com.irliao.housie.ticket.Ticket;
@@ -120,7 +120,6 @@ public abstract class AbstractBingoGame {
     void registerQuitCommand() {
         Command quitCommand = new QuitCommand();
         keyPressHandler.registerCommand(KEY_TO_QUIT, quitCommand);
-        keyPressHandler.registerCommand(KEY_TO_QUIT.toLowerCase(), quitCommand);
         System.out.println("Note: - Press '" + KEY_TO_QUIT + "' to quit any time.\n");
     }
 
@@ -130,7 +129,6 @@ public abstract class AbstractBingoGame {
     void registerCallCommand() {
         Command nextCommand = new CallCommand(dealer);
         keyPressHandler.registerCommand(KEY_TO_CONTINUE, nextCommand);
-        keyPressHandler.registerCommand(KEY_TO_CONTINUE.toLowerCase(), nextCommand);
         keyPressHandler.registerCommand("", nextCommand); // NOTE: this is only registered for easy of use in demo
         System.out.println(">> Press " + KEY_TO_CONTINUE + " to generate next number.\n");
     }

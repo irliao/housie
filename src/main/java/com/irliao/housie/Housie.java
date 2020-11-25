@@ -1,13 +1,11 @@
 package com.irliao.housie;
 
+import com.irliao.housie.combination.AbstractCombination;
 import com.irliao.housie.combination.EarlyFiveCombination;
 import com.irliao.housie.combination.FullHouseCombination;
 import com.irliao.housie.combination.TopLineCombination;
-import com.irliao.housie.combination.AbstractCombination;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /***
@@ -17,14 +15,24 @@ import java.util.stream.Collectors;
 public class Housie extends AbstractBingoGame {
 
     private final Set<AbstractCombination> winnableCombinations;
+    private final Map<Integer, Set<AbstractCombination>> currentWinners;
 
     public Housie() {
         gameName = "Housie";
+        currentWinners = new HashMap<>();
 
         winnableCombinations = new HashSet<>();
         winnableCombinations.add(new EarlyFiveCombination());
         winnableCombinations.add(new FullHouseCombination());
         winnableCombinations.add(new TopLineCombination());
+    }
+
+    /***
+     * Gets the map of the current winners and the combinations won.
+     * @return map of winning player's ID to the Set of combinations won
+     */
+    Map<Integer, Set<AbstractCombination>> getCurrentWinners() {
+        return currentWinners;
     }
 
     /***
@@ -34,16 +42,29 @@ public class Housie extends AbstractBingoGame {
      */
     @Override
     void determineWinners() {
-        players.forEach(player -> winnableCombinations.stream()
-            .filter(winCombination -> !winCombination.getClaimed())
-            .forEach(winCombination ->  {
-                if (winCombination.isWinningTicket(player.getTicket())) {
-                    System.out.println("\n");
-                    System.out.println("We have a winner: Player#" + player.getId() + " has won " + "'" + winCombination.getName() + "'" + " winning combination.");
-                    player.addWinningCombination(winCombination);
-                    winCombination.setClaimed(true);
-                }
-            }));
+        players.forEach(player ->
+            winnableCombinations.stream()
+                .filter(winCombination -> !winCombination.getClaimed())
+                .forEach(winCombination ->  {
+                    if (winCombination.isWinningTicket(player.getTicket())) {
+                        System.out.println("\n");
+                        System.out.println("We have a winner: Player#" + player.getId() + " has won " + "'" + winCombination.getName() + "'" + " winning combination.");
+                        registerWinner(player.getId(), winCombination);
+                        winCombination.setClaimed(true);
+                    }
+                }));
+    }
+
+    /***
+     * Registers the player's ID and the player's win combinations into a map.
+     * This method should be called when a new winner has been determined.
+     * @param id id of the player who had a winning ticket for the combination
+     * @param combinationWon the combination the player has won
+     */
+    public void registerWinner(int id, AbstractCombination combinationWon) {
+        Set<AbstractCombination> combinationsWon = currentWinners.getOrDefault(id, new HashSet<>());
+        combinationsWon.add(combinationWon);
+        currentWinners.put(id, combinationsWon);
     }
 
     /***
@@ -67,7 +88,7 @@ public class Housie extends AbstractBingoGame {
     String generateGameSummary() {
         StringBuilder stringBuilder = new StringBuilder();
         players.forEach(player -> {
-            Set<AbstractCombination> winCombinations = player.getCombinationsWon();
+            Set<AbstractCombination> winCombinations = currentWinners.getOrDefault(player.getId(), new HashSet<>());
             List<String> winningCombinationsString = winCombinations.stream()
                 .map(AbstractCombination::getName)
                 .collect(Collectors.toList());

@@ -28,6 +28,7 @@ Run src/main/java/com/irliao/housie/Application.java
 
 ## Future Improvements
 - Integrate logger
+- Improve unit tests
 
 ## Author
 Ryan Liao

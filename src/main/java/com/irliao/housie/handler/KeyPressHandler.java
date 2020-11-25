@@ -4,6 +4,7 @@ import com.irliao.housie.command.Command;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /***
  * Handles all the actions performed for the mapped key presses.
@@ -11,25 +12,38 @@ import java.util.Map;
  */
 public class KeyPressHandler {
 
-    final Map<String, Command> keyMap = new HashMap<>();
+    private final Map<String, Command> keyMap = new HashMap<>();
 
     /***
      * Registers a key press to a command into our map.
-     * @param keyPress letter of the key pressed
+     * @param keyPress letter string of the key press
      * @param command command to execute
      */
     public void registerCommand(String keyPress, Command command) {
-        keyMap.put(keyPress, command);
+        if (keyPress == null || command == null) {
+            throw new IllegalArgumentException("Attempting to register invalid key press or command, both should not be null");
+        }
+        keyMap.put(keyPress.toLowerCase(), command);
     }
 
     /***
      * Runs the command mapped to the key pressed (if found).
-     * @param keyPress
-     * @throws IllegalArgumentException if the key handled is not recognized/registed
+     * @param keyPress letter string of the key press
+     * @throws IllegalArgumentException if the key handled is not recognized/registered
      */
     public void runCommand(String keyPress) throws IllegalArgumentException {
         if (!keyMap.containsKey(keyPress)) {
-            throw new IllegalArgumentException("Invalid key press.");
+            String validKeys = keyMap.keySet()
+                                     .stream()
+                                     .map(String::toUpperCase)
+                                     .map(registeredKeyPress -> {
+                                         if (registeredKeyPress.isEmpty()) {
+                                             return "Enter";
+                                         }
+                                         return registeredKeyPress;
+                                     })
+                                     .collect(Collectors.joining(", "));
+            throw new IllegalArgumentException("Invalid key press, valid keys are: " + validKeys);
         }
         keyMap.get(keyPress).execute();
     }

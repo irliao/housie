@@ -88,9 +88,9 @@ public class SettingHandler {
      */
     int requestNumberRange() {
         return inputHandler.requestNumber(">> Enter the number range : ",
-            "Invalid number range entered, please enter a number >= 5",
+            "Invalid number range, please enter a number >= 5",
             DEFAULT_NUMBER_RANGE_END,
-            rangeNum -> rangeNum > 5);  // greater than or equal to 5 because of Early Five Combination
+            rangeNum -> rangeNum >= 5);  // greater than or equal to 6 to handle Early Five Combination
     }
 
     /***
@@ -99,7 +99,7 @@ public class SettingHandler {
      */
     int requestNumberOfPlayers() {
         return inputHandler.requestNumber(">> Enter Number of players playing the game : ",
-            "Invalid number of players entered, please enter a number > 1",
+            "Invalid number of players, please enter a number > 1",
             DEFAULT_NUMBER_OF_PLAYERS,
             playerNum -> playerNum > 1);
     }
@@ -111,7 +111,7 @@ public class SettingHandler {
      */
     int requestNumberOfRows() {
         return inputHandler.requestNumber(">> Enter Number of rows for the Ticket : ",
-            "Invalid number of rows entered, please enter a number where 0 < number <= " + numberRangeEnd,
+            "Invalid number of rows, please enter a number where 0 < number <= " + numberRangeEnd,
             DEFAULT_NUMBER_OF_ROWS,
             numOfRows -> numOfRows > 0 &&
                          numOfRows <= numberRangeEnd);
@@ -120,13 +120,18 @@ public class SettingHandler {
     /***
      * Request user input for number of columns to have on the ticket.
      * Total size of the ticket should be at least 5 due to Early Five Combination.
+     * There is a special check for greater than equal to 6 to handle scenario when
+     * the num of rows is 2 and range is 5, we must have at least 3 columns to have
+     * 6 slots on the ticket available since 2 columns will result only in 4 slots
+     * while we need at least 5 slots with numbers.
      * @return number of columns
      */
     int requestNumberOfCols() {
         return inputHandler.requestNumber(">> Enter Number of columns for the Ticket : ",
-            "Invalid number of columns entered, please enter a number where number >= " + (5 / numberOfRows),
+            "Invalid number of columns, please enter a number where number >= " + (numberOfRows == 1 ? 5 : (6 / numberOfRows)),
             DEFAULT_NUMBER_OF_COLS,
-            numOfCols -> (numOfCols * numberOfRows) >= 5); // greater than or equal to 5 because of Early Five Combination
+            numOfCols -> (numOfCols * numberOfRows) >= 6 || // greater than or equal to 6 to handle Early Five Combination
+                         (numberOfRows == 1 && numOfCols >= 5)); // if only 1 row, must have 5 columns to handle Early Five Combination
     }
 
     /***
@@ -138,7 +143,7 @@ public class SettingHandler {
      */
     int requestNumbersPerRow() {
         return inputHandler.requestNumber(">> Enter numbers per row : ",
-            "Invalid number entered, please enter a number where " + (5 / numberOfRows) + " <= number <= " + Math.min(numberOfCols, (numberRangeEnd / numberOfRows)),
+            "Invalid numbers per row, please enter a number where " + (numberOfRows == 1 ? 5 : (6 / numberOfRows)) + " <= number <= " + Math.min(numberOfCols, (numberRangeEnd / numberOfRows)),
             DEFAULT_NUMBERS_PER_ROW,
             numPerRow -> numPerRow > 0 &&
                          numPerRow <= numberOfCols &&

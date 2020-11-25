@@ -35,11 +35,11 @@ public class Ticket {
      */
     public void markNumberIfFound(int number) {
         slots.stream()
-            .flatMap(Collection::stream)
-            .filter(Objects::nonNull)
-            .filter(ticketSlot -> ticketSlot.getNumber() == number)
-            .findFirst()
-            .ifPresent(ticketSlot -> ticketSlot.setMarked(true));
+             .flatMap(Collection::stream)
+             .filter(Objects::nonNull)
+             .filter(ticketSlot -> ticketSlot.getNumber() == number)
+             .findFirst()
+             .ifPresent(ticketSlot -> ticketSlot.setMarked(true));
     }
 
     /***
@@ -59,12 +59,11 @@ public class Ticket {
                 TicketSlot ticketSlotWithNumber = new TicketSlot(randomNumber);
                 slotRow.set(i, ticketSlotWithNumber);
             });
-            Collections.shuffle(slots);
+            Collections.shuffle(slotRow);
             slots.add(row, slotRow);
         });
 
         return slots;
     }
-
 }
 
