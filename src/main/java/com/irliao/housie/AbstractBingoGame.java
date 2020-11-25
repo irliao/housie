@@ -11,9 +11,7 @@ import com.irliao.housie.role.Dealer;
 import com.irliao.housie.role.Player;
 import com.irliao.housie.ticket.Ticket;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /***
@@ -23,8 +21,8 @@ import java.util.stream.IntStream;
  */
 public abstract class AbstractBingoGame {
 
-    public static final String KEY_TO_QUIT = "Q";
-    private static final String KEY_TO_CONTINUE = "N";
+    public static final String KEY_TO_QUIT = "Q"; // both Q and q will be registered as Quit command
+    private static final String KEY_TO_CONTINUE = "N"; // both N and n will be registered as Continue command
 
     private final Scanner inputScanner;
     private final KeyPressHandler keyPressHandler;
@@ -37,6 +35,13 @@ public abstract class AbstractBingoGame {
         inputScanner = new Scanner(System.in);
         keyPressHandler = new KeyPressHandler();
     }
+
+    /***
+     * Sets up the game to how a specific subclass bingo game type should behave.
+     * This is called in the beginning of play() to initialize the objects needed and
+     * to reinitialize to a fresh/clean state when play() is called multiple times.
+     */
+    abstract void setUpGame();
 
     /***
      * Define how the winners will be determined.
@@ -59,10 +64,15 @@ public abstract class AbstractBingoGame {
     /***
      * Starts the bingo game application, using the implementations specified by the subclass.
      * Will first request user input to set up the game, then execute the game loop.
+     * Each time the play() is called, the subclass needs to properly handle any state
+     * cleanup via implementing the setUpGame() as this method may be called more than once.
      */
     public void play() {
         displayGameIntro();
 
+        // registering here because we want to print the instruction to Quit after the intro
+        // otherwise this could go to the constructor (though displayGameIntro() doesn't make
+        // sense to be called in the constructor)
         registerQuitCommand();
 
         // requests the user for inputs on how the game should be set up
@@ -73,6 +83,9 @@ public abstract class AbstractBingoGame {
         bingoNumberProvider = new RandomBingoNumberProvider(settingHandler.getNumberRangeStart(), settingHandler.getNumberRangeEnd());
         dealer = new Dealer(bingoNumberProvider.createBingoNumbers());
         players = createAndRegisterPlayersWithTicket(settingHandler);
+
+        // sets up game to the implementation provided by the subclass
+        setUpGame();
 
         // register this after the setup has been completed
         registerCallCommand();
@@ -96,6 +109,7 @@ public abstract class AbstractBingoGame {
     /***
      * Creates the players with tickets and registers the players to listen to Dealer calling numbers.
      * The number of player and size of ticket will be specified in the SettingHandler.
+     * The list of players here will be sequentially generated, with ID from 1 to number of players.
      * @param settingHandler settings from the user input
      * @return list of players participating in this bingo game.
      */
@@ -155,13 +169,15 @@ public abstract class AbstractBingoGame {
     }
 
     /***
-     * Prints every players' ticket.
+     * Prints every players' ticket, ordered by player's ID
      */
     void printAllTickets() {
-        players.forEach(player -> {
-            System.out.println("Player#" + player.getId() + ":");
-            player.getTicket().printTicket();
-            System.out.println(" ");
-        });
+        players.stream()
+               .sorted(Comparator.comparingInt(Player::getId))
+               .forEach(player -> {
+                    System.out.println("Player#" + player.getId() + ":");
+                    player.getTicket().printTicket();
+                    System.out.println(" ");
+               });
     }
 }

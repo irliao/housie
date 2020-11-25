@@ -4,6 +4,7 @@ import com.irliao.housie.combination.AbstractCombination;
 import com.irliao.housie.combination.EarlyFiveCombination;
 import com.irliao.housie.combination.FullHouseCombination;
 import com.irliao.housie.combination.TopLineCombination;
+import com.irliao.housie.role.Player;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,11 +21,7 @@ public class Housie extends AbstractBingoGame {
     public Housie() {
         gameName = "Housie";
         currentWinners = new HashMap<>();
-
         winnableCombinations = new HashSet<>();
-        winnableCombinations.add(new EarlyFiveCombination());
-        winnableCombinations.add(new FullHouseCombination());
-        winnableCombinations.add(new TopLineCombination());
     }
 
     /***
@@ -36,12 +33,34 @@ public class Housie extends AbstractBingoGame {
     }
 
     /***
+     * Sets up the game to the specification of the Housie type bingo.
+     * For Housie, we want to register 3 types of winnable combinations and also
+     * create a new map for the game to keep track of all the winners.
+     * Before we add the setup, we clear the current state so when play() is called
+     * multiple times, each game will have a fresh/clean state.
+     */
+    @Override
+    void setUpGame() {
+        currentWinners.clear();
+
+        winnableCombinations.clear();
+        winnableCombinations.add(new EarlyFiveCombination());
+        winnableCombinations.add(new FullHouseCombination());
+        winnableCombinations.add(new TopLineCombination());
+    }
+
+    /***
      * Checks the current players' tickets to see if any combination has been won.
      * Once the combination has been claimed by a player, it is no longer claimable by other players.
-     * The order at which the players are checked is sequential to how the players are created.
+     * Since the players are sequentially created, this method will shuffle the players each time so
+     * the order of checking will be fair to all even though we are sequentially traversing the list.
      */
     @Override
     void determineWinners() {
+        // shuffle the players each time before we attempt to determine the winners, this provides fairness
+        // to the player so each player at each round will have equal chance of claiming the combination first
+        Collections.shuffle(players);
+
         players.forEach(player ->
             winnableCombinations.stream()
                 .filter(winCombination -> !winCombination.getClaimed()) // this would be commented out
@@ -84,20 +103,24 @@ public class Housie extends AbstractBingoGame {
      * Generates a string of current summary of the game.
      * The summary contains player ID and the combinations claimed by the player.
      * The summary should be specific to Housie type bingo.
+     * Since we are shuffling the players each time we determine the winners, we need to sort
+     * the list here to print the summary of players in ascending order to their IDs.
      * @return summary of the Housie game
      */
     @Override
     String generateGameSummary() {
         StringBuilder stringBuilder = new StringBuilder();
-        players.forEach(player -> {
-            Set<AbstractCombination> winCombinations = currentWinners.getOrDefault(player.getId(), new HashSet<>());
-            List<String> winningCombinationsString = winCombinations.stream()
-                .map(AbstractCombination::getName)
-                .collect(Collectors.toList());
-            boolean isWinningTicket = !winningCombinationsString.isEmpty();
-            String playerSummary = isWinningTicket ? String.join(" and ", winningCombinationsString) : "Nothing";
-            stringBuilder.append("Player#").append(player.getId()).append(" : ").append(playerSummary).append("\n");
-        });
+        players.stream()
+               .sorted(Comparator.comparingInt(Player::getId))
+               .forEach(player -> {
+                    Set<AbstractCombination> winCombinations = currentWinners.getOrDefault(player.getId(), new HashSet<>());
+                    List<String> winningCombinationsString = winCombinations.stream()
+                        .map(AbstractCombination::getName)
+                        .collect(Collectors.toList());
+                    boolean isWinningTicket = !winningCombinationsString.isEmpty();
+                    String playerSummary = isWinningTicket ? String.join(" and ", winningCombinationsString) : "Nothing";
+                    stringBuilder.append("Player#").append(player.getId()).append(" : ").append(playerSummary).append("\n");
+               });
 
         return stringBuilder.toString();
     }
