@@ -65,5 +65,24 @@ public class Ticket {
 
         return slots;
     }
+
+    /***
+     * Prints the current ticket, showing the number on the ticket and whether the ticket is marked.
+     */
+    public void printTicket() {
+        IntStream.range(0, rowSize).forEachOrdered(row -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            IntStream.range(0, colSize).forEachOrdered(col -> {
+                TicketSlot slot = slots.get(row).get(col);
+                if (slot == null) {
+                    stringBuilder.append("__ _ | ");
+                } else {
+                    String markedString = slot.getMarked() ? "x" : "_";
+                    stringBuilder.append(slot.getNumber() + " " + markedString + " | ");
+                }
+            });
+            System.out.println(stringBuilder);
+        });
+    }
 }
 
